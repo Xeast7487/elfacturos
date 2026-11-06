@@ -3,7 +3,7 @@ import './globals.css'
 
 export const metadata: Metadata = {
   title: 'elfacturos — Facturation',
-  description: 'Système de facturation personnel',
+  description: 'Système de facturation personnel — elfacturos',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
