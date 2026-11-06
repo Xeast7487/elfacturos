@@ -23,18 +23,15 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
-      <div className="w-full max-w-xs">
-        {/* Logo */}
-        <div className="text-center mb-10">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-[#111] mb-5">
-            <span className="text-xl font-black tracking-tighter text-white">EF</span>
-          </div>
-          <h1 className="text-3xl font-black uppercase tracking-tight text-white">elfacturos</h1>
-          <p className="text-xs font-semibold uppercase tracking-widest text-[#444] mt-1">Facturation personnelle</p>
+    <div className="login-wrap">
+      <div className="login-box">
+        <div className="login-logo">
+          <div className="login-logo-icon">EF</div>
+          <h1 className="login-title">elfacturos</h1>
+          <p className="login-sub">Facturation personnelle</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="card p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="login-form">
           <div>
             <label className="label">Courriel</label>
             <input
@@ -60,15 +57,9 @@ export default function LoginPage() {
             />
           </div>
 
-          {error && (
-            <p className="text-xs font-semibold text-[#f87171] bg-[#1a0808] rounded-xl px-4 py-3">{error}</p>
-          )}
+          {error && <p className="login-error">{error}</p>}
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="btn-primary w-full justify-center py-3 text-sm"
-          >
+          <button type="submit" disabled={loading} className="btn-primary" style={{ justifyContent: 'center', padding: '12px' }}>
             {loading ? 'Connexion...' : 'Se connecter'}
           </button>
         </form>

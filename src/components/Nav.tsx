@@ -7,7 +7,7 @@ import { createClient } from '@/lib/supabase-client'
 const navItems = [
   {
     href: '/dashboard',
-    label: 'Tableau de bord',
+    label: 'Tableau',
     icon: (
       <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
@@ -41,11 +41,17 @@ const navItems = [
   },
 ]
 
-const logoutIcon = (
+const IconLogout = () => (
   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
     <polyline points="16 17 21 12 16 7"/>
     <line x1="21" y1="12" x2="9" y2="12"/>
+  </svg>
+)
+
+const IconPlus = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
   </svg>
 )
 
@@ -62,77 +68,42 @@ export default function Nav() {
 
   return (
     <>
-      {/* Desktop sidebar — icon only */}
-      <aside className="hidden md:flex flex-col w-16 h-screen sticky top-0 border-r border-[#1a1a1a] items-center py-5 gap-1 flex-shrink-0">
-        {/* Logo */}
-        <div className="w-9 h-9 rounded-xl bg-[#1a1a1a] flex items-center justify-center mb-6">
-          <span className="text-xs font-black tracking-tighter text-white select-none">EF</span>
-        </div>
+      {/* Desktop sidebar */}
+      <aside className="app-sidebar">
+        <div className="nav-logo">EF</div>
 
-        {/* Nav items */}
         {navItems.map(item => {
           const active = pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(item.href))
           return (
-            <Link
-              key={item.href}
-              href={item.href}
-              title={item.label}
-              className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${
-                active
-                  ? 'bg-white text-black'
-                  : 'text-[#444] hover:text-white hover:bg-[#1a1a1a]'
-              }`}
-            >
+            <Link key={item.href} href={item.href} title={item.label} className={`nav-btn${active ? ' active' : ''}`}>
               {item.icon}
             </Link>
           )
         })}
 
-        <div className="flex-1" />
+        <div className="nav-spacer" />
 
-        {/* New invoice shortcut */}
-        <Link
-          href="/factures/new"
-          title="Nouvelle facture"
-          className="w-10 h-10 rounded-xl flex items-center justify-center text-[#444] hover:text-white hover:bg-[#1a1a1a] transition-all mb-2"
-        >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-          </svg>
+        <Link href="/factures/new" title="Nouvelle facture" className="nav-btn">
+          <IconPlus />
         </Link>
-
-        {/* Logout */}
-        <button
-          onClick={handleLogout}
-          title="Déconnexion"
-          className="w-10 h-10 rounded-xl flex items-center justify-center text-[#444] hover:text-white hover:bg-[#1a1a1a] transition-all"
-        >
-          {logoutIcon}
+        <button onClick={handleLogout} title="Déconnexion" className="nav-btn">
+          <IconLogout />
         </button>
       </aside>
 
       {/* Mobile bottom bar */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-[#000] border-t border-[#1a1a1a] flex z-50">
+      <nav className="mobile-nav">
         {navItems.map(item => {
           const active = pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(item.href))
           return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`flex-1 flex flex-col items-center gap-1 py-3 text-[0.6rem] font-bold uppercase tracking-wider transition-colors ${
-                active ? 'text-white' : 'text-[#444]'
-              }`}
-            >
+            <Link key={item.href} href={item.href} className={`mobile-nav-item${active ? ' active' : ''}`}>
               {item.icon}
-              <span>{item.label.split(' ')[0]}</span>
+              <span>{item.label}</span>
             </Link>
           )
         })}
-        <button
-          onClick={handleLogout}
-          className="flex-1 flex flex-col items-center gap-1 py-3 text-[0.6rem] font-bold uppercase tracking-wider text-[#444]"
-        >
-          {logoutIcon}
+        <button onClick={handleLogout} className="mobile-nav-item">
+          <IconLogout />
           <span>Sortir</span>
         </button>
       </nav>

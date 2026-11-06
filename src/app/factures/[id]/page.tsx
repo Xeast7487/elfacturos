@@ -37,21 +37,21 @@ export default async function InvoicePage({ params }: { params: Promise<{ id: st
 
   return (
     <AppLayout>
-      <div className="max-w-2xl space-y-5">
+      <div className="detail-wrap">
         {/* Header */}
-        <div className="flex flex-wrap items-start justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <Link href="/factures" className="w-8 h-8 rounded-lg bg-[#1a1a1a] flex items-center justify-center text-[#555] hover:text-white transition-colors">
+        <div className="detail-header">
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+            <Link href="/factures" className="back-btn">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="15 18 9 12 15 6"/>
               </svg>
             </Link>
             <div>
-              <div className="flex items-center gap-2.5">
-                <h1 className="text-xl font-black text-white">{inv.invoice_number}</h1>
+              <div className="detail-title-row">
+                <h1 className="detail-title">{inv.invoice_number}</h1>
                 <StatusBadge status={inv.status} />
               </div>
-              <p className="text-xs text-[#444] mt-0.5">
+              <p className="detail-meta">
                 Émise le {new Date(inv.issued_date).toLocaleDateString('fr-CA', { year: 'numeric', month: 'long', day: 'numeric' })}
                 {inv.due_date && ` · Échéance ${new Date(inv.due_date).toLocaleDateString('fr-CA', { year: 'numeric', month: 'long', day: 'numeric' })}`}
               </p>
@@ -61,82 +61,74 @@ export default async function InvoicePage({ params }: { params: Promise<{ id: st
         </div>
 
         {/* Client + amounts */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div className="card p-5">
-            <p className="label mb-3">Facturer à</p>
+        <div className="two-col" style={{ marginBottom: 12 }}>
+          <div className="card card-pad">
+            <p className="card-label">Facturer à</p>
             {client ? (
-              <div className="space-y-0.5">
-                <p className="font-bold text-white">{client.name}</p>
-                {client.email && <p className="text-sm text-[#555]">{client.email}</p>}
-                {client.phone && <p className="text-sm text-[#555]">{client.phone}</p>}
+              <div>
+                <p style={{ fontWeight: 700, color: '#fff', marginBottom: 4 }}>{client.name}</p>
+                {client.email && <p style={{ fontSize: '0.875rem', color: '#555' }}>{client.email}</p>}
+                {client.phone && <p style={{ fontSize: '0.875rem', color: '#555' }}>{client.phone}</p>}
                 {(client.address || client.city) && (
-                  <p className="text-sm text-[#444] mt-1">
+                  <p style={{ fontSize: '0.875rem', color: '#444', marginTop: 4 }}>
                     {[client.address, client.city, client.postal_code, client.country].filter(Boolean).join(', ')}
                   </p>
                 )}
               </div>
             ) : (
-              <p className="text-[#333] text-sm">Aucun client</p>
+              <p style={{ fontSize: '0.875rem', color: '#333' }}>Aucun client</p>
             )}
           </div>
 
-          <div className="card p-5">
-            <p className="label mb-3">Montants</p>
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm">
-                <span className="text-[#555]">Sous-total</span>
-                <span className="text-white font-semibold">{fmt(subtotal)}</span>
-              </div>
-              {inv.tax_rate > 0 && (
-                <div className="flex justify-between text-sm">
-                  <span className="text-[#555]">Taxe ({inv.tax_rate}%)</span>
-                  <span className="text-white font-semibold">{fmt(taxAmt)}</span>
-                </div>
-              )}
-              <div className="flex justify-between pt-2 border-t border-[#1a1a1a]">
-                <span className="font-bold text-white text-sm">Total</span>
-                <span className="font-black text-xl text-[#a3e635]">{fmt(total)}</span>
-              </div>
-              {inv.paid_at && (
-                <p className="text-xs font-bold text-[#a3e635] mt-2">
-                  ✓ Payée le {new Date(inv.paid_at).toLocaleDateString('fr-CA', { year: 'numeric', month: 'long', day: 'numeric' })}
-                </p>
-              )}
+          <div className="card card-pad">
+            <p className="card-label">Montants</p>
+            <div className="amount-row">
+              <span className="amount-label">Sous-total</span>
+              <span className="amount-val">{fmt(subtotal)}</span>
             </div>
+            {inv.tax_rate > 0 && (
+              <div className="amount-row">
+                <span className="amount-label">Taxe ({inv.tax_rate}%)</span>
+                <span className="amount-val">{fmt(taxAmt)}</span>
+              </div>
+            )}
+            <div className="amount-divider" />
+            <div className="amount-row">
+              <span className="amount-total-label">Total</span>
+              <span className="amount-total-val">{fmt(total)}</span>
+            </div>
+            {inv.paid_at && (
+              <p className="paid-note">✓ Payée le {new Date(inv.paid_at).toLocaleDateString('fr-CA', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+            )}
           </div>
         </div>
 
         {/* Line items */}
-        <div className="card overflow-hidden">
-          <div className="grid grid-cols-[1fr_60px_100px_100px] gap-2 px-5 py-3 border-b border-[#1a1a1a]">
-            {['Description', 'Qté', 'Prix unit.', 'Total'].map((h, i) => (
-              <span key={h} className={`text-[0.6rem] font-bold uppercase tracking-widest text-[#444] ${i > 0 ? 'text-right' : ''}`}>{h}</span>
-            ))}
+        <div className="card" style={{ marginBottom: 12, overflow: 'hidden' }}>
+          <div className="items-header">
+            <span className="col-label">Description</span>
+            <span className="col-label r">Qté</span>
+            <span className="col-label r">Prix unit.</span>
+            <span className="col-label r">Total</span>
           </div>
-          <div>
-            {items.map((item, i) => (
-              <div
-                key={item.id}
-                className={`grid grid-cols-[1fr_60px_100px_100px] gap-2 px-5 py-3.5 ${i < items.length - 1 ? 'border-b border-[#1a1a1a]' : ''}`}
-              >
-                <p className="text-sm text-white font-medium">{item.description}</p>
-                <p className="text-sm text-[#555] text-right">{item.quantity}</p>
-                <p className="text-sm text-[#555] text-right">{fmt(item.unit_price)}</p>
-                <p className="text-sm text-white font-bold text-right">{fmt(item.quantity * item.unit_price)}</p>
-              </div>
-            ))}
-          </div>
+          {items.map(item => (
+            <div key={item.id} className="items-row">
+              <span className="col-desc">{item.description}</span>
+              <span className="col-num">{item.quantity}</span>
+              <span className="col-price">{fmt(item.unit_price)}</span>
+              <span className="col-total">{fmt(item.quantity * item.unit_price)}</span>
+            </div>
+          ))}
         </div>
 
         {inv.notes && (
-          <div className="card p-5">
-            <p className="label mb-2">Notes</p>
-            <p className="text-sm text-[#888] whitespace-pre-line">{inv.notes}</p>
+          <div className="card card-pad" style={{ marginBottom: 12 }}>
+            <p className="card-label">Notes</p>
+            <p className="notes-text">{inv.notes}</p>
           </div>
         )}
 
-        {/* Edit */}
-        <div className="flex justify-end">
+        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           <Link href={`/factures/${id}/edit`} className="btn-secondary">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
