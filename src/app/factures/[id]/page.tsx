@@ -29,7 +29,7 @@ export default async function InvoicePage({ params }: { params: Promise<{ id: st
 
   if (!inv) notFound()
 
-  const items = [...((inv.inv_items as any[]) ?? [])].sort((a, b) => a.position - b.position)
+  const items    = [...((inv.inv_items as any[]) ?? [])].sort((a, b) => a.position - b.position)
   const subtotal = items.reduce((acc, item) => acc + item.quantity * item.unit_price, 0)
   const taxAmt   = subtotal * (inv.tax_rate ?? 0) / 100
   const total    = subtotal + taxAmt
@@ -37,69 +37,68 @@ export default async function InvoicePage({ params }: { params: Promise<{ id: st
 
   return (
     <AppLayout>
-      <div className="space-y-6 max-w-3xl">
+      <div className="max-w-2xl space-y-5">
         {/* Header */}
-        <div className="flex flex-wrap items-center justify-between gap-4">
+        <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="flex items-center gap-3">
-            <Link href="/factures" className="text-slate-500 hover:text-slate-300">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <Link href="/factures" className="w-8 h-8 rounded-lg bg-[#1a1a1a] flex items-center justify-center text-[#555] hover:text-white transition-colors">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="15 18 9 12 15 6"/>
               </svg>
             </Link>
             <div>
-              <h1 className="text-2xl font-bold text-white">{inv.invoice_number}</h1>
-              <div className="flex items-center gap-2 mt-1">
+              <div className="flex items-center gap-2.5">
+                <h1 className="text-xl font-black text-white">{inv.invoice_number}</h1>
                 <StatusBadge status={inv.status} />
-                <span className="text-xs text-slate-500">
-                  Émise le {new Date(inv.issued_date).toLocaleDateString('fr-CA', { year: 'numeric', month: 'long', day: 'numeric' })}
-                  {inv.due_date && ` · Échéance ${new Date(inv.due_date).toLocaleDateString('fr-CA', { year: 'numeric', month: 'long', day: 'numeric' })}`}
-                </span>
               </div>
+              <p className="text-xs text-[#444] mt-0.5">
+                Émise le {new Date(inv.issued_date).toLocaleDateString('fr-CA', { year: 'numeric', month: 'long', day: 'numeric' })}
+                {inv.due_date && ` · Échéance ${new Date(inv.due_date).toLocaleDateString('fr-CA', { year: 'numeric', month: 'long', day: 'numeric' })}`}
+              </p>
             </div>
           </div>
-
           <InvoiceActions invoiceId={id} status={inv.status} />
         </div>
 
         {/* Client + amounts */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div className="card p-5">
-            <p className="text-xs text-slate-500 font-medium mb-2">Facturer à</p>
+            <p className="label mb-3">Facturer à</p>
             {client ? (
-              <div>
-                <p className="font-semibold text-white">{client.name}</p>
-                {client.email && <p className="text-sm text-slate-400 mt-0.5">{client.email}</p>}
-                {client.phone && <p className="text-sm text-slate-400">{client.phone}</p>}
+              <div className="space-y-0.5">
+                <p className="font-bold text-white">{client.name}</p>
+                {client.email && <p className="text-sm text-[#555]">{client.email}</p>}
+                {client.phone && <p className="text-sm text-[#555]">{client.phone}</p>}
                 {(client.address || client.city) && (
-                  <p className="text-sm text-slate-400 mt-1">
+                  <p className="text-sm text-[#444] mt-1">
                     {[client.address, client.city, client.postal_code, client.country].filter(Boolean).join(', ')}
                   </p>
                 )}
               </div>
             ) : (
-              <p className="text-slate-500 text-sm">Aucun client</p>
+              <p className="text-[#333] text-sm">Aucun client</p>
             )}
           </div>
 
           <div className="card p-5">
-            <p className="text-xs text-slate-500 font-medium mb-2">Montants</p>
-            <div className="space-y-1.5">
+            <p className="label mb-3">Montants</p>
+            <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <span className="text-slate-400">Sous-total</span>
-                <span className="text-white">{fmt(subtotal)}</span>
+                <span className="text-[#555]">Sous-total</span>
+                <span className="text-white font-semibold">{fmt(subtotal)}</span>
               </div>
               {inv.tax_rate > 0 && (
                 <div className="flex justify-between text-sm">
-                  <span className="text-slate-400">Taxe ({inv.tax_rate}%)</span>
-                  <span className="text-white">{fmt(taxAmt)}</span>
+                  <span className="text-[#555]">Taxe ({inv.tax_rate}%)</span>
+                  <span className="text-white font-semibold">{fmt(taxAmt)}</span>
                 </div>
               )}
-              <div className="flex justify-between text-sm border-t border-white/8 pt-1.5 mt-1.5">
-                <span className="font-semibold text-white">Total</span>
-                <span className="font-bold text-indigo-300 text-lg">{fmt(total)}</span>
+              <div className="flex justify-between pt-2 border-t border-[#1a1a1a]">
+                <span className="font-bold text-white text-sm">Total</span>
+                <span className="font-black text-xl text-[#a3e635]">{fmt(total)}</span>
               </div>
               {inv.paid_at && (
-                <p className="text-xs text-green-400 mt-2">
+                <p className="text-xs font-bold text-[#a3e635] mt-2">
                   ✓ Payée le {new Date(inv.paid_at).toLocaleDateString('fr-CA', { year: 'numeric', month: 'long', day: 'numeric' })}
                 </p>
               )}
@@ -109,23 +108,21 @@ export default async function InvoicePage({ params }: { params: Promise<{ id: st
 
         {/* Line items */}
         <div className="card overflow-hidden">
-          <div className="px-5 py-3.5 border-b border-white/8 bg-white/3">
-            <div className="hidden sm:grid grid-cols-[1fr_80px_120px_120px] gap-2 text-xs font-semibold text-slate-400">
-              <span>Description</span>
-              <span className="text-center">Qté</span>
-              <span className="text-right">Prix unit.</span>
-              <span className="text-right">Total</span>
-            </div>
+          <div className="grid grid-cols-[1fr_60px_100px_100px] gap-2 px-5 py-3 border-b border-[#1a1a1a]">
+            {['Description', 'Qté', 'Prix unit.', 'Total'].map((h, i) => (
+              <span key={h} className={`text-[0.6rem] font-bold uppercase tracking-widest text-[#444] ${i > 0 ? 'text-right' : ''}`}>{h}</span>
+            ))}
           </div>
-          <div className="divide-y divide-white/5">
-            {items.map(item => (
-              <div key={item.id} className="px-5 py-3">
-                <div className="sm:grid grid-cols-[1fr_80px_120px_120px] gap-2">
-                  <p className="text-sm text-white font-medium">{item.description}</p>
-                  <p className="text-sm text-slate-400 text-center sm:text-center">{item.quantity}</p>
-                  <p className="text-sm text-slate-400 text-right">{fmt(item.unit_price)}</p>
-                  <p className="text-sm text-white font-semibold text-right">{fmt(item.quantity * item.unit_price)}</p>
-                </div>
+          <div>
+            {items.map((item, i) => (
+              <div
+                key={item.id}
+                className={`grid grid-cols-[1fr_60px_100px_100px] gap-2 px-5 py-3.5 ${i < items.length - 1 ? 'border-b border-[#1a1a1a]' : ''}`}
+              >
+                <p className="text-sm text-white font-medium">{item.description}</p>
+                <p className="text-sm text-[#555] text-right">{item.quantity}</p>
+                <p className="text-sm text-[#555] text-right">{fmt(item.unit_price)}</p>
+                <p className="text-sm text-white font-bold text-right">{fmt(item.quantity * item.unit_price)}</p>
               </div>
             ))}
           </div>
@@ -133,19 +130,19 @@ export default async function InvoicePage({ params }: { params: Promise<{ id: st
 
         {inv.notes && (
           <div className="card p-5">
-            <p className="text-xs text-slate-500 font-medium mb-1">Notes</p>
-            <p className="text-sm text-slate-300 whitespace-pre-line">{inv.notes}</p>
+            <p className="label mb-2">Notes</p>
+            <p className="text-sm text-[#888] whitespace-pre-line">{inv.notes}</p>
           </div>
         )}
 
-        {/* Edit link */}
+        {/* Edit */}
         <div className="flex justify-end">
           <Link href={`/factures/${id}/edit`} className="btn-secondary">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
               <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
             </svg>
-            Modifier la facture
+            Modifier
           </Link>
         </div>
       </div>
